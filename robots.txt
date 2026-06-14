@@ -1,4 +1,2 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://baseball-calculator.github.io/sitemap.xml
