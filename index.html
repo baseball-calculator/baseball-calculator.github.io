@@ -1124,7 +1124,7 @@ menuBar.classList.toggle('mobile-active');
 function updateSpeedDisplay() {
 gameSpeed = parseFloat(document.getElementById('gameSpeed').value) || 140;
 const arrivalTime = (64.8 / gameSpeed).toFixed(2);
-document.getElementById('speedDisplay').textContent = 선택된 구속: ${gameSpeed} km/h (도달 시간: ${arrivalTime}초);
+document.getElementById('speedDisplay').textContent = '선택된 구속: ${gameSpeed} km/h (도달 시간: ${arrivalTime}초)';
 }
 
 document.getElementById('gameSpeed').addEventListener('change', updateSpeedDisplay);
@@ -1152,11 +1152,11 @@ gameSpeed = parseFloat(document.getElementById('gameSpeed').value) || 140;
 const arrivalTime = 64.8 / gameSpeed;
 
 const ball = document.getElementById('gameballBall');
-ball.style.animation = 'none';
+ball.style.animation = `ballMove ${arrivalTime}s linear forwards`;
 ball.offsetHeight;
 
 ballStartTime = performance.now();
-ball.style.animation = ballMove ${arrivalTime}s linear forwards;
+ball.style.animation = `ballMove ${arrivalTime}s linear forwards`;
 
 setTimeout(() => {
 gameActive = false;
