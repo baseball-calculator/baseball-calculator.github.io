@@ -1124,7 +1124,7 @@ menuBar.classList.toggle('mobile-active');
 function updateSpeedDisplay() {
 gameSpeed = parseFloat(document.getElementById('gameSpeed').value) || 140;
 const arrivalTime = (64.8 / gameSpeed).toFixed(2);
-document.getElementById('speedDisplay').textContent = '선택된 구속: ${gameSpeed} km/h (도달 시간: ${arrivalTime}초)';
+document.getElementById('speedDisplay').textContent = `선택된 구속: ${gameSpeed} km/h (도달 시간: ${arrivalTime}초)`;
 }
 
 document.getElementById('gameSpeed').addEventListener('change', updateSpeedDisplay);
