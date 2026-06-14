@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>야구 계산기</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+min-height: 100vh;
+padding: 20px;
+}
+
+.top-bar {
+max-width: 1200px;
+margin: 0 auto 20px;
+background: white;
+border-radius: 10px;
+padding: 0;
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+overflow: hidden;
+}
+
+.menu-toggle {
+display: none;
+background: #667eea;
+color: white;
+padding: 15px 20px;
+font-size: 1.5em;
+cursor: pointer;
+border: none;
+width: 100%;
+}
+
+.menu-toggle.active {
+display: block;
+}
+
+.menu-bar {
+display: flex;
+list-style: none;
+}
+
+.menu-category {
+flex: 1;
+border-right: 1px solid #ddd;
+}
+
+.menu-category:last-child {
+border-right: none;
+}
+
+.category-title {
+background: #667eea;
+color: white;
+padding: 12px;
+text-align: center;
+font-weight: 600;
+cursor: pointer;
+user-select: none;
+}
+
+.category-title:hover {
+background: #5568d3;
+}
+
+.submenu {
+display: none;
+background: #f5f5f5;
+padding: 0;
+list-style: none;
+}
+
+.submenu.active {
+display: flex;
+flex-direction: column;
+}
+
+.submenu-item {
+padding: 10px 15px;
+border-bottom: 1px solid #ddd;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.submenu-item:hover {
+background: #e0e0e0;
+}
+
+.submenu-item.active {
+background: #667eea;
+color: white;
+}
+
+.container {
+max-width: 1200px;
+margin: 0 auto;
+}
+
+h2 {
+text-align: center;
+color: white;
+margin-bottom: 30px;
+font-size: 2em;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.content {
+display: none;
+}
+
+.content.active {
+display: block;
+}
+
+.card {
+background: white;
+border-radius: 10px;
+padding: 25px;
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.form-group {
+margin-bottom: 15px;
+}
+
+label {
+display: block;
+color: #555;
+font-weight: 600;
+margin-bottom: 5px;
+font-size: 0.9em;
+}
+
+input[type="number"] {
+width: 100%;
+padding: 10px;
+border: 2px solid #ddd;
+border-radius: 5px;
+font-size: 1em;
+transition: border-color 0.3s;
+}
+
+input[type="number"]:focus {
+outline: none;
+border-color: #667eea;
+box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+}
+
+.button-group {
+display: flex;
+gap: 10px;
+margin-top: 20px;
+}
+
+button {
+flex: 1;
+padding: 12px;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.btn-calculate {
+background: #667eea;
+color: white;
+}
+
+.btn-calculate:hover {
+background: #5568d3;
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-reset {
+background: #e0e0e0;
+color: #333;
+}
+
+.btn-reset:hover {
+background: #d0d0d0;
+}
+
+.result {
+background: #f5f5f5;
+border-left: 4px solid #667eea;
+padding: 15px;
+border-radius: 5px;
+margin-top: 15px;
+display: none;
+}
+
+.result.show {
+display: block;
+animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+from {
+opacity: 0;
+transform: translateY(-10px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+.result-item {
+display: flex;
+justify-content: space-between;
+padding: 10px 0;
+border-bottom: 1px solid #ddd;
+}
+
+.result-item:last-child {
+border-bottom: none;
+}
+
+.result-label {
+color: #666;
+font-weight: 600;
+}
+
+.result-value {
+color: #667eea;
+font-weight: 700;
+font-size: 1.1em;
+}
+
+.info {
+background: #e3f2fd;
+border-left: 4px solid #2196f3;
+padding: 12px;
+border-radius: 5px;
+margin-bottom: 15px;
+font-size: 0.85em;
+color: #1565c0;
+}
+
+/* 미니게임 스타일 */
+.game-container {
+background: #1a1a2e;
+border-radius: 10px;
+padding: 30px;
+color: white;
+}
+
+.speed-selector {
+margin: 20px 0;
+text-align: center;
+}
+
+.speed-selector label {
+color: white;
+display: inline-block;
+margin-right: 20px;
+}
+
+.speed-selector input {
+width: 100px;
+padding: 8px;
+border-radius: 5px;
+border: none;
+font-size: 1em;
+}
+
+.game-field {
+margin: 30px 0;
+}
+
+.pitch-track {
+background: #333;
+border: 2px solid #666;
+border-radius: 5px;
+height: 30px;
+position: relative;
+overflow: hidden;
+margin: 20px 0;
+width: 100%;
+}
+
+.strike-zones {
+display: flex;
+height: 100%;
+width: 100%;
+}
+
+.zone {
+position: relative;
+}
+
+.zone.red {
+flex: 7;
+background: linear-gradient(90deg, #ff4444 0%, #ff6666 100%);
+}
+
+.zone.yellow {
+flex: 2;
+background: linear-gradient(90deg, #ffdd44 0%, #ffff66 100%);
+}
+
+.zone.green {
+flex: 1;
+background: linear-gradient(90deg, #44ff44 0%, #66ff66 100%);
+}
+
+.zone.darkgreen {
+flex: 0.5;
+background: linear-gradient(90deg, #00aa00 0%, #00dd00 100%);
+}
+
+.ball {
+width: 8px;
+height: 30px;
+background: white;
+position: absolute;
+top: 0;
+left: 0;
+box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.ball.animating {
+animation: ballMove linear forwards;
+}
+
+@keyframes ballMove {
+from {
+left: 0;
+}
+to {
+left: calc(100% - 8px);
+}
+}
+
+.game-buttons {
+text-align: center;
+margin: 20px 0;
+}
+
+.game-buttons button {
+padding: 15px 40px;
+font-size: 1.1em;
+margin: 10px;
+}
+
+.btn-pitch {
+background: #ff6b6b;
+}
+
+.btn-pitch:hover {
+background: #ff5252;
+}
+
+.btn-pitch:disabled {
+background: #999;
+cursor: not-allowed;
+}
+
+.btn-swing {
+background: #4ecdc4;
+}
+
+.btn-swing:hover {
+background: #45b7b1;
+}
+
+.btn-swing:disabled {
+background: #999;
+cursor: not-allowed;
+}
+
+.game-info {
+background: #2a2a3e;
+border-radius: 10px;
+padding: 15px;
+margin: 20px 0;
+text-align: center;
+font-size: 1.1em;
+}
+
+.result-board {
+background: #2a2a3e;
+border-radius: 10px;
+padding: 20px;
+margin-top: 20px;
+display: none;
+}
+
+.result-board.show {
+display: block;
+animation: slideIn 0.3s ease-out;
+}
+
+.result-board h3 {
+color: #44ff44;
+margin-bottom: 15px;
+font-size: 1.3em;
+}
+
+.result-row {
+display: flex;
+justify-content: space-between;
+padding: 10px 0;
+border-bottom: 1px solid #444;
+color: #ddd;
+}
+
+.result-row:last-child {
+border-bottom: none;
+}
+
+.result-title {
+font-weight: 600;
+}
+
+.result-value {
+color: #44ff44;
+font-weight: 700;
+}
+
+@media (max-width: 1024px) {
+.menu-bar {
+flex-direction: column;
+}
+
+.menu-category {
+border-right: none;
+border-bottom: 1px solid #ddd;
+}
+
+.category-title {
+text-align: left;
+}
+}
+
+@media (max-width: 768px) {
+.menu-bar {
+display: none;
+}
+
+.menu-bar.mobile-active {
+display: flex;
+flex-direction: column;
+}
+
+.menu-toggle {
+display: block;
+}
+}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<button class="menu-toggle" onclick="toggleMobileMenu()">☰ 메뉴</button>
+<ul class="menu-bar" id="menuBar">
+<!-- 타자 지표 -->
+<li class="menu-category">
+<div class="category-title" onclick="toggleSubmenu(this)">타자 지표</div>
+<ul class="submenu">
+<li class="submenu-item active" onclick="switchTab('avg')">타율 (AVG)</li>
+<li class="submenu-item" onclick="switchTab('obp')">출루율 (OBP)</li>
+<li class="submenu-item" onclick="switchTab('slg')">장타율 (SLG)</li>
+<li class="submenu-item" onclick="switchTab('ops')">OPS</li>
+<li class="submenu-item" onclick="switchTab('ops_plus')">OPS+</li>
+<li class="submenu-item" onclick="switchTab('isod')">순출루율 (ISO D)</li>
+<li class="submenu-item" onclick="switchTab('isop')">순장타율 (ISO P)</li>
+<li class="submenu-item" onclick="switchTab('bbk')">BB/K 비율</li>
+<li class="submenu-item" onclick="switchTab('wrc_plus')">wRC+</li>
+<li class="submenu-item" onclick="switchTab('bat_all')">타자 종합</li>
+</ul>
+</li>
+
+<!-- 투수 지표 -->
+<li class="menu-category">
+<div class="category-title" onclick="toggleSubmenu(this)">투수 지표</div>
+<ul class="submenu">
+<li class="submenu-item" onclick="switchTab('era')">ERA</li>
+<li class="submenu-item" onclick="switchTab('era_plus')">ERA+</li>
+<li class="submenu-item" onclick="switchTab('whip')">WHIP</li>
+<li class="submenu-item" onclick="switchTab('k9')">K/9</li>
+<li class="submenu-item" onclick="switchTab('bb9')">BB/9</li>
+<li class="submenu-item" onclick="switchTab('kkbb')">K/BB 비율</li>
+<li class="submenu-item" onclick="switchTab('pitch_all')">투수 종합</li>
+</ul>
+</li>
+
+<!-- 미니게임 -->
+<li class="menu-category">
+<div class="category-title" onclick="toggleSubmenu(this)">미니게임</div>
+<ul class="submenu">
+<li class="submenu-item" onclick="switchTab('batting_game')">구속체감하기</li>
+</ul>
+</li>
+</ul>
+</div>
+
+<div class="container">
+<!-- 구속체감하기 게임 -->
+<div class="content active" id="batting_game">
+<h2>구속체감하기</h2>
+<div class="card">
+<div class="game-container">
+<div class="speed-selector">
+<label for="gameSpeed">구속 선택 (km/h):</label>
+<input type="number" id="gameSpeed" min="100" max="160" value="140" step="1">
+</div>
+
+<div class="game-info">
+<div id="speedDisplay">선택된 구속: 140 km/h (도달 시간: 0.46초)</div>
+</div>
+
+<div class="game-field">
+<div style="text-align: center; margin-bottom: 10px; color: #999; font-size: 0.9em;">
+<span style="background: #ff4444; padding: 3px 10px; border-radius: 3px; margin-right: 8px; display: inline-block;">빨강</span>
+<span style="background: #ffdd44; color: black; padding: 3px 10px; border-radius: 3px; margin-right: 8px; display: inline-block;">노랑</span>
+<span style="background: #44ff44; color: black; padding: 3px 10px; border-radius: 3px; margin-right: 8px; display: inline-block;">초록</span>
+<span style="background: #00aa00; color: white; padding: 3px 10px; border-radius: 3px; display: inline-block;">찐초록</span>
+</div>
+<div class="pitch-track">
+<div class="strike-zones">
+<div class="zone red"></div>
+<div class="zone yellow"></div>
+<div class="zone green"></div>
+<div class="zone darkgreen"></div>
+</div>
+<div class="ball" id="gameballBall"></div>
+</div>
+</div>
+
+<div class="game-buttons">
+<button class="btn-pitch" id="pitchBtn" onclick="startPitch()">투구</button>
+<button class="btn-swing" id="swingBtn" onclick="swing()" disabled>스윙</button>
+</div>
+
+<div class="result-board" id="resultBoard">
+<h3>타격 결과</h3>
+<div class="result-row">
+<span class="result-title">스윙 타이밍:</span>
+<span class="result-value" id="swingTime">-</span>
+</div>
+<div class="result-row">
+<span class="result-title">타격 위치:</span>
+<span class="result-value" id="hitZone">-</span>
+</div>
+<div class="result-row">
+<span class="result-title">결과:</span>
+<span class="result-value" id="hitResult">-</span>
+</div>
+<div class="result-row">
+<span class="result-title">공 도달 시간:</span>
+<span class="result-value" id="totalTime">-</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 타율 (기본값) -->
+<div class="content active" id="avg">
+<h2>타율 (AVG)</h2>
+<div class="card">
+<div class="info">안타와 타수를 입력하여 타율을 계산합니다</div>
+<div class="form-group">
+<label for="avg_hits">안타:</label>
+<input type="number" id="avg_hits" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="avg_atBats">타수:</label>
+<input type="number" id="avg_atBats" min="0" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcAvg()">계산</button>
+<button class="btn-reset" onclick="resetAvg()">초기화</button>
+</div>
+<div class="result" id="avgResult">
+<div class="result-item">
+<span class="result-label">타율</span>
+<span class="result-value" id="avgValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 다른 탭들... -->
+<div class="content" id="obp">
+<h2>출루율 (OBP)</h2>
+<div class="card">
+<div class="info">공식: (안타 + 볼넷 + 데드볼) ÷ (타수 + 볼넷 + 데드볼 + 희생플라이)</div>
+<div class="form-group">
+<label for="obp_hits">안타:</label>
+<input type="number" id="obp_hits" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="obp_walks">볼넷:</label>
+<input type="number" id="obp_walks" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="obp_hbp">데드볼 (HBP):</label>
+<input type="number" id="obp_hbp" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="obp_atBats">타수:</label>
+<input type="number" id="obp_atBats" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="obp_sf">희생플라이:</label>
+<input type="number" id="obp_sf" min="0" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcObp()">계산</button>
+<button class="btn-reset" onclick="resetObp()">초기화</button>
+</div>
+<div class="result" id="obpResult">
+<div class="result-item">
+<span class="result-label">출루율</span>
+<span class="result-value" id="obpValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="slg">
+<h2>장타율 (SLG)</h2>
+<div class="card">
+<div class="info">안타, 2루타, 3루타, 홈런, 타수를 입력하여 장타율을 계산합니다</div>
+<div class="form-group">
+<label for="slg_1b">1루타 (안타-2루타-3루타-홈런):</label>
+<input type="number" id="slg_1b" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="slg_2b">2루타:</label>
+<input type="number" id="slg_2b" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="slg_3b">3루타:</label>
+<input type="number" id="slg_3b" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="slg_hr">홈런:</label>
+<input type="number" id="slg_hr" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="slg_atBats">타수:</label>
+<input type="number" id="slg_atBats" min="0" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcSlg()">계산</button>
+<button class="btn-reset" onclick="resetSlg()">초기화</button>
+</div>
+<div class="result" id="slgResult">
+<div class="result-item">
+<span class="result-label">장타율</span>
+<span class="result-value" id="slgValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="ops">
+<h2>OPS</h2>
+<div class="card">
+<div class="info">출루율과 장타율을 입력하여 OPS를 계산합니다</div>
+<div class="form-group">
+<label for="ops_obp">출루율 (OBP):</label>
+<input type="number" id="ops_obp" min="0" step="0.001" value="0">
+</div>
+<div class="form-group">
+<label for="ops_slg">장타율 (SLG):</label>
+<input type="number" id="ops_slg" min="0" step="0.001" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcOps()">계산</button>
+<button class="btn-reset" onclick="resetOps()">초기화</button>
+</div>
+<div class="result" id="opsResult">
+<div class="result-item">
+<span class="result-label">OPS</span>
+<span class="result-value" id="opsValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="ops_plus">
+<h2>OPS+ (조정 OPS)</h2>
+<div class="card">
+<div class="info">리그 평균과 비교하여 OPS를 조정합니다 (100 = 평균)</div>
+<div class="form-group">
+<label for="opsplus_ops">선수 OPS:</label>
+<input type="number" id="opsplus_ops" min="0" step="0.001" value="0">
+</div>
+<div class="form-group">
+<label for="opsplus_league">리그 평균 OPS:</label>
+<input type="number" id="opsplus_league" min="0" step="0.001" value="0.750">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcOpsPlus()">계산</button>
+<button class="btn-reset" onclick="resetOpsPlus()">초기화</button>
+</div>
+<div class="result" id="opsplusResult">
+<div class="result-item">
+<span class="result-label">OPS+</span>
+<span class="result-value" id="opsplusValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="isod">
+<h2>순출루율 (ISO D)</h2>
+<div class="card">
+<div class="info">순출루율은 출루율에서 타율을 뺀 값입니다 (OBP - AVG)</div>
+<div class="form-group">
+<label for="isod_obp">출루율 (OBP):</label>
+<input type="number" id="isod_obp" min="0" step="0.001" value="0">
+</div>
+<div class="form-group">
+<label for="isod_avg">타율 (AVG):</label>
+<input type="number" id="isod_avg" min="0" step="0.001" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcIsod()">계산</button>
+<button class="btn-reset" onclick="resetIsod()">초기화</button>
+</div>
+<div class="result" id="isodResult">
+<div class="result-item">
+<span class="result-label">ISO D</span>
+<span class="result-value" id="isodValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="isop">
+<h2>순장타율 (ISO P)</h2>
+<div class="card">
+<div class="info">순장타율은 장타율에서 타율을 뺀 값입니다 (SLG - AVG)</div>
+<div class="form-group">
+<label for="isop_slg">장타율 (SLG):</label>
+<input type="number" id="isop_slg" min="0" step="0.001" value="0">
+</div>
+<div class="form-group">
+<label for="isop_avg">타율 (AVG):</label>
+<input type="number" id="isop_avg" min="0" step="0.001" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcIsop()">계산</button>
+<button class="btn-reset" onclick="resetIsop()">초기화</button>
+</div>
+<div class="result" id="isopResult">
+<div class="result-item">
+<span class="result-label">ISO P</span>
+<span class="result-value" id="isopValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="bbk">
+<h2>BB/K 비율 (타자)</h2>
+<div class="card">
+<div class="info">선택의 좋음을 나타내는 지표입니다 (볼넷÷삼진)</div>
+<div class="form-group">
+<label for="bbk_bb">볼넷:</label>
+<input type="number" id="bbk_bb" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="bbk_k">삼진:</label>
+<input type="number" id="bbk_k" min="0" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcBbk()">계산</button>
+<button class="btn-reset" onclick="resetBbk()">초기화</button>
+</div>
+<div class="result" id="bbkResult">
+<div class="result-item">
+<span class="result-label">BB/K</span>
+<span class="result-value" id="bbkValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="wrc_plus">
+<h2>wRC+ (가중런생성 플러스)</h2>
+<div class="card">
+<div class="info">리그 평균 대비 선수의 득점 기여도를 나타냅니다 (100 = 평균)</div>
+<div class="form-group">
+<label for="wrc_wrc">가중런생성 (wRC):</label>
+<input type="number" id="wrc_wrc" min="0" step="0.1" value="0">
+</div>
+<div class="form-group">
+<label for="wrc_league">리그 평균 wRC:</label>
+<input type="number" id="wrc_league" min="0" step="0.1" value="30">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcWrcPlus()">계산</button>
+<button class="btn-reset" onclick="resetWrcPlus()">초기화</button>
+</div>
+<div class="result" id="wrcResult">
+<div class="result-item">
+<span class="result-label">wRC+</span>
+<span class="result-value" id="wrcValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="bat_all">
+<h2>타자 종합</h2>
+<div class="card">
+<div class="info">모든 타격 지표를 한번에 계산합니다</div>
+<div class="form-group">
+<label for="bat_hits">안타:</label>
+<input type="number" id="bat_hits" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="bat_2b">2루타:</label>
+<input type="number" id="bat_2b" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="bat_3b">3루타:</label>
+<input type="number" id="bat_3b" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="bat_hr">홈런:</label>
+<input type="number" id="bat_hr" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="bat_ab">타수:</label>
+<input type="number" id="bat_ab" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="bat_bb">볼넷:</label>
+<input type="number" id="bat_bb" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="bat_hbp">데드볼 (HBP):</label>
+<input type="number" id="bat_hbp" min="0" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcBatAll()">계산</button>
+<button class="btn-reset" onclick="resetBatAll()">초기화</button>
+</div>
+<div class="result" id="batallResult">
+<div class="result-item">
+<span class="result-label">타율 (AVG)</span>
+<span class="result-value" id="batall_avg">-</span>
+</div>
+<div class="result-item">
+<span class="result-label">장타율 (SLG)</span>
+<span class="result-value" id="batall_slg">-</span>
+</div>
+<div class="result-item">
+<span class="result-label">출루율 (OBP)</span>
+<span class="result-value" id="batall_obp">-</span>
+</div>
+<div class="result-item">
+<span class="result-label">OPS</span>
+<span class="result-value" id="batall_ops">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 투수 지표들 -->
+<div class="content" id="era">
+<h2>평균자책점 (ERA)</h2>
+<div class="card">
+<div class="info">이닝과 자책점을 입력하여 ERA를 계산합니다</div>
+<div class="form-group">
+<label for="era_er">자책점:</label>
+<input type="number" id="era_er" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="era_ip">이닝:</label>
+<input type="number" id="era_ip" min="0" step="0.1" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcEra()">계산</button>
+<button class="btn-reset" onclick="resetEra()">초기화</button>
+</div>
+<div class="result" id="eraResult">
+<div class="result-item">
+<span class="result-label">ERA</span>
+<span class="result-value" id="eraValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="era_plus">
+<h2>ERA+ (조정 자책점)</h2>
+<div class="card">
+<div class="info">리그 평균과 비교하여 ERA를 조정합니다 (100 = 평균)</div>
+<div class="form-group">
+<label for="eraplus_era">투수 ERA:</label>
+<input type="number" id="eraplus_era" min="0" step="0.01" value="0">
+</div>
+<div class="form-group">
+<label for="eraplus_league">리그 평균 ERA:</label>
+<input type="number" id="eraplus_league" min="0" step="0.01" value="4.00">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcEraPlus()">계산</button>
+<button class="btn-reset" onclick="resetEraPlus()">초기화</button>
+</div>
+<div class="result" id="eraplusResult">
+<div class="result-item">
+<span class="result-label">ERA+</span>
+<span class="result-value" id="eraplusValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="whip">
+<h2>WHIP (피안타율)</h2>
+<div class="card">
+<div class="info">이닝당 허용 피안타와 볼넷의 합입니다</div>
+<div class="form-group">
+<label for="whip_h">피안타:</label>
+<input type="number" id="whip_h" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="whip_bb">볼넷:</label>
+<input type="number" id="whip_bb" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="whip_ip">이닝:</label>
+<input type="number" id="whip_ip" min="0" step="0.1" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcWhip()">계산</button>
+<button class="btn-reset" onclick="resetWhip()">초기화</button>
+</div>
+<div class="result" id="whipResult">
+<div class="result-item">
+<span class="result-label">WHIP</span>
+<span class="result-value" id="whipValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="k9">
+<h2>K/9 (9이닝당 삼진)</h2>
+<div class="card">
+<div class="info">9이닝당 탈삼진 수입니다</div>
+<div class="form-group">
+<label for="k9_k">탈삼진:</label>
+<input type="number" id="k9_k" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="k9_ip">이닝:</label>
+<input type="number" id="k9_ip" min="0" step="0.1" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcK9()">계산</button>
+<button class="btn-reset" onclick="resetK9()">초기화</button>
+</div>
+<div class="result" id="k9Result">
+<div class="result-item">
+<span class="result-label">K/9</span>
+<span class="result-value" id="k9Value">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="bb9">
+<h2>BB/9 (9이닝당 볼넷)</h2>
+<div class="card">
+<div class="info">9이닝당 허용 볼넷 수입니다</div>
+<div class="form-group">
+<label for="bb9_bb">볼넷:</label>
+<input type="number" id="bb9_bb" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="bb9_ip">이닝:</label>
+<input type="number" id="bb9_ip" min="0" step="0.1" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcBb9()">계산</button>
+<button class="btn-reset" onclick="resetBb9()">초기화</button>
+</div>
+<div class="result" id="bb9Result">
+<div class="result-item">
+<span class="result-label">BB/9</span>
+<span class="result-value" id="bb9Value">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="kkbb">
+<h2>K/BB 비율 (투수)</h2>
+<div class="card">
+<div class="info">투수의 제어능력을 나타내는 지표입니다 (탈삼진÷볼넷)</div>
+<div class="form-group">
+<label for="kkbb_k">탈삼진:</label>
+<input type="number" id="kkbb_k" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="kkbb_bb">볼넷:</label>
+<input type="number" id="kkbb_bb" min="0" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcKkbb()">계산</button>
+<button class="btn-reset" onclick="resetKkbb()">초기화</button>
+</div>
+<div class="result" id="kkbbResult">
+<div class="result-item">
+<span class="result-label">K/BB</span>
+<span class="result-value" id="kkbbValue">-</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="content" id="pitch_all">
+<h2>투수 종합</h2>
+<div class="card">
+<div class="info">모든 투수 지표를 한번에 계산합니다</div>
+<div class="form-group">
+<label for="pitch_ip">이닝:</label>
+<input type="number" id="pitch_ip" min="0" step="0.1" value="0">
+</div>
+<div class="form-group">
+<label for="pitch_er">자책점:</label>
+<input type="number" id="pitch_er" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="pitch_h">피안타:</label>
+<input type="number" id="pitch_h" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="pitch_bb">볼넷:</label>
+<input type="number" id="pitch_bb" min="0" value="0">
+</div>
+<div class="form-group">
+<label for="pitch_k">탈삼진:</label>
+<input type="number" id="pitch_k" min="0" value="0">
+</div>
+<div class="button-group">
+<button class="btn-calculate" onclick="calcPitchAll()">계산</button>
+<button class="btn-reset" onclick="resetPitchAll()">초기화</button>
+</div>
+<div class="result" id="pitchallResult">
+<div class="result-item">
+<span class="result-label">ERA</span>
+<span class="result-value" id="pitch_era">-</span>
+</div>
+<div class="result-item">
+<span class="result-label">WHIP</span>
+<span class="result-value" id="pitch_whip">-</span>
+</div>
+<div class="result-item">
+<span class="result-label">K/9</span>
+<span class="result-value" id="pitch_k9">-</span>
+</div>
+<div class="result-item">
+<span class="result-label">BB/9</span>
+<span class="result-value" id="pitch_bb9">-</span>
+</div>
+<div class="result-item">
+<span class="result-label">K/BB</span>
+<span class="result-value" id="pitch_kkbb">-</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+// 게임 변수
+let gameActive = false;
+let gameSpeed = 140;
+let ballStartTime = 0;
+
+function toggleSubmenu(elem) {
+const submenu = elem.nextElementSibling;
+const isActive = submenu.classList.contains('active');
+
+document.querySelectorAll('.submenu').forEach(m => m.classList.remove('active'));
+document.querySelectorAll('.submenu-item').forEach(m => m.classList.remove('active'));
+
+if (!isActive) {
+submenu.classList.add('active');
+}
+}
+
+function switchTab(tabId) {
+document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+document.getElementById(tabId).classList.add('active');
+
+document.querySelectorAll('.submenu-item').forEach(item => {
+item.classList.remove('active');
+});
+if (event && event.target) {
+event.target.classList.add('active');
+}
+}
+
+function toggleMobileMenu() {
+const menuBar = document.getElementById('menuBar');
+menuBar.classList.toggle('mobile-active');
+}
+
+// 게임 함수들
+function updateSpeedDisplay() {
+gameSpeed = parseFloat(document.getElementById('gameSpeed').value) || 140;
+const arrivalTime = (64.8 / gameSpeed).toFixed(2);
+document.getElementById('speedDisplay').textContent = 선택된 구속: ${gameSpeed} km/h (도달 시간: ${arrivalTime}초);
+}
+
+document.getElementById('gameSpeed').addEventListener('change', updateSpeedDisplay);
+updateSpeedDisplay();
+
+function startPitch() {
+if (gameActive) return;
+
+gameActive = true;
+document.getElementById('pitchBtn').disabled = true;
+document.getElementById('swingBtn').disabled = true;
+document.getElementById('resultBoard').classList.remove('show');
+
+// 랜덤하게 1~2초 뒤에 투구
+const randomDelay = Math.random() * 1000 + 1000; // 1000ms ~ 2000ms
+
+setTimeout(() => {
+throwBall();
+document.getElementById('swingBtn').disabled = false;
+}, randomDelay);
+}
+
+function throwBall() {
+gameSpeed = parseFloat(document.getElementById('gameSpeed').value) || 140;
+const arrivalTime = 64.8 / gameSpeed;
+
+const ball = document.getElementById('gameballBall');
+ball.style.animation = 'none';
+ball.offsetHeight;
+
+ballStartTime = performance.now();
+ball.style.animation = ballMove ${arrivalTime}s linear forwards;
+
+setTimeout(() => {
+gameActive = false;
+document.getElementById('pitchBtn').disabled = false;
+document.getElementById('swingBtn').disabled = true;
+document.getElementById('swingBtn').textContent = '스윙';
+ball.style.animation = 'none';
+ball.style.left = '0';
+}, arrivalTime * 1000);
+}
+
+function swing() {
+if (!gameActive) return;
+
+const ball = document.getElementById('gameballBall');
+const pitchTrack = document.querySelector('.pitch-track');
+
+gameSpeed = parseFloat(document.getElementById('gameSpeed').value) || 140;
+const totalArrivalTime = 64.8 / gameSpeed;
+const elapsedTime = (performance.now() - ballStartTime) / 1000;
+
+const ballRect = ball.getBoundingClientRect();
+const trackRect = pitchTrack.getBoundingClientRect();
+let ballProgress = (ballRect.left - trackRect.left) / trackRect.width;
+
+let hitZone = '';
+let hitResult = '';
+
+// 공이 끝까지 지나간 경우
+if (ballProgress >= 1) {
+hitZone = '빨강 (초기)';
+hitResult = '타이밍 늦음! (완전히 지나감)';
+}
+else if (ballProgress < 0.7) {
+hitZone = '빨강 (초기)';
+hitResult = '너무 빠른 타이밍!';
+} else if (ballProgress < 0.86) {
+hitZone = '노랑 (중기)';
+hitResult = '빠른 타이밍!';
+} else if (ballProgress < 0.93) {
+hitZone = '초록 (종기)';
+hitResult = '나쁘지 않은 타이밍!';
+} else {
+hitZone = '찐초록 (끝)';
+hitResult = '좋은 타이밍!';
+}
+
+document.getElementById('swingTime').textContent = elapsedTime.toFixed(2) + '초';
+document.getElementById('hitZone').textContent = hitZone;
+document.getElementById('hitResult').textContent = hitResult;
+document.getElementById('totalTime').textContent = totalArrivalTime.toFixed(2) + '초';
+
+document.getElementById('resultBoard').classList.add('show');
+
+gameActive = false;
+document.getElementById('pitchBtn').disabled = false;
+document.getElementById('swingBtn').disabled = true;
+document.getElementById('swingBtn').textContent = '스윙';
+
+ball.style.animation = 'none';
+ball.style.left = '0';
+}
+
+// 기존 계산기 함수들
+function calcAvg() {
+const hits = parseFloat(document.getElementById('avg_hits').value) || 0;
+const ab = parseFloat(document.getElementById('avg_atBats').value) || 0;
+if (ab === 0) { alert('타수를 입력하세요'); return; }
+const avg = (hits / ab).toFixed(3);
+document.getElementById('avgValue').textContent = avg;
+document.getElementById('avgResult').classList.add('show');
+}
+function resetAvg() {
+document.getElementById('avg_hits').value = 0;
+document.getElementById('avg_atBats').value = 0;
+document.getElementById('avgResult').classList.remove('show');
+}
+
+function calcObp() {
+const hits = parseFloat(document.getElementById('obp_hits').value) || 0;
+const walks = parseFloat(document.getElementById('obp_walks').value) || 0;
+const hbp = parseFloat(document.getElementById('obp_hbp').value) || 0;
+const ab = parseFloat(document.getElementById('obp_atBats').value) || 0;
+const sf = parseFloat(document.getElementById('obp_sf').value) || 0;
+
+const numerator = hits + walks + hbp;
+const denominator = ab + walks + hbp + sf;
+
+if (denominator === 0) { alert('필요한 값을 입력하세요'); return; }
+const obp = (numerator / denominator).toFixed(3);
+document.getElementById('obpValue').textContent = obp;
+document.getElementById('obpResult').classList.add('show');
+}
+function resetObp() {
+document.getElementById('obp_hits').value = 0;
+document.getElementById('obp_walks').value = 0;
+document.getElementById('obp_hbp').value = 0;
+document.getElementById('obp_atBats').value = 0;
+document.getElementById('obp_sf').value = 0;
+document.getElementById('obpResult').classList.remove('show');
+}
+
+function calcSlg() {
+const bases1 = parseFloat(document.getElementById('slg_1b').value) || 0;
+const bases2 = parseFloat(document.getElementById('slg_2b').value) || 0;
+const bases3 = parseFloat(document.getElementById('slg_3b').value) || 0;
+const hr = parseFloat(document.getElementById('slg_hr').value) || 0;
+const ab = parseFloat(document.getElementById('slg_atBats').value) || 0;
+if (ab === 0) { alert('타수를 입력하세요'); return; }
+const totalBases = bases1 + (bases2 * 2) + (bases3 * 3) + (hr * 4);
+const slg = (totalBases / ab).toFixed(3);
+document.getElementById('slgValue').textContent = slg;
+document.getElementById('slgResult').classList.add('show');
+}
+function resetSlg() {
+document.getElementById('slg_1b').value = 0;
+document.getElementById('slg_2b').value = 0;
+document.getElementById('slg_3b').value = 0;
+document.getElementById('slg_hr').value = 0;
+document.getElementById('slg_atBats').value = 0;
+document.getElementById('slgResult').classList.remove('show');
+}
+
+function calcOps() {
+const obp = parseFloat(document.getElementById('ops_obp').value) || 0;
+const slg = parseFloat(document.getElementById('ops_slg').value) || 0;
+if (obp === 0 && slg === 0) { alert('값을 입력하세요'); return; }
+const ops = (obp + slg).toFixed(3);
+document.getElementById('opsValue').textContent = ops;
+document.getElementById('opsResult').classList.add('show');
+}
+function resetOps() {
+document.getElementById('ops_obp').value = 0;
+document.getElementById('ops_slg').value = 0;
+document.getElementById('opsResult').classList.remove('show');
+}
+
+function calcOpsPlus() {
+const ops = parseFloat(document.getElementById('opsplus_ops').value) || 0;
+const league = parseFloat(document.getElementById('opsplus_league').value) || 0.750;
+if (ops === 0 || league === 0) { alert('값을 입력하세요'); return; }
+const opsplus = Math.round((ops / league) * 100);
+document.getElementById('opsplusValue').textContent = opsplus;
+document.getElementById('opsplusResult').classList.add('show');
+}
+function resetOpsPlus() {
+document.getElementById('opsplus_ops').value = 0;
+document.getElementById('opsplus_league').value = 0.750;
+document.getElementById('opsplusResult').classList.remove('show');
+}
+
+function calcIsod() {
+const obp = parseFloat(document.getElementById('isod_obp').value) || 0;
+const avg = parseFloat(document.getElementById('isod_avg').value) || 0;
+const isod = (obp - avg).toFixed(3);
+document.getElementById('isodValue').textContent = isod;
+document.getElementById('isodResult').classList.add('show');
+}
+function resetIsod() {
+document.getElementById('isod_obp').value = 0;
+document.getElementById('isod_avg').value = 0;
+document.getElementById('isodResult').classList.remove('show');
+}
+
+function calcIsop() {
+const slg = parseFloat(document.getElementById('isop_slg').value) || 0;
+const avg = parseFloat(document.getElementById('isop_avg').value) || 0;
+const isop = (slg - avg).toFixed(3);
+document.getElementById('isopValue').textContent = isop;
+document.getElementById('isopResult').classList.add('show');
+}
+function resetIsop() {
+document.getElementById('isop_slg').value = 0;
+document.getElementById('isop_avg').value = 0;
+document.getElementById('isopResult').classList.remove('show');
+}
+
+function calcBbk() {
+const bb = parseFloat(document.getElementById('bbk_bb').value) || 0;
+const k = parseFloat(document.getElementById('bbk_k').value) || 0;
+if (k === 0) { alert('삼진을 입력하세요'); return; }
+const bbk = (bb / k).toFixed(3);
+document.getElementById('bbkValue').textContent = bbk;
+document.getElementById('bbkResult').classList.add('show');
+}
+function resetBbk() {
+document.getElementById('bbk_bb').value = 0;
+document.getElementById('bbk_k').value = 0;
+document.getElementById('bbkResult').classList.remove('show');
+}
+
+function calcWrcPlus() {
+const wrc = parseFloat(document.getElementById('wrc_wrc').value) || 0;
+const league = parseFloat(document.getElementById('wrc_league').value) || 30;
+if (league === 0) { alert('값을 입력하세요'); return; }
+const wrcplus = Math.round((wrc / league) * 100);
+document.getElementById('wrcValue').textContent = wrcplus;
+document.getElementById('wrcResult').classList.add('show');
+}
+function resetWrcPlus() {
+document.getElementById('wrc_wrc').value = 0;
+document.getElementById('wrc_league').value = 30;
+document.getElementById('wrcResult').classList.remove('show');
+}
+
+function calcBatAll() {
+const hits = parseFloat(document.getElementById('bat_hits').value) || 0;
+const d = parseFloat(document.getElementById('bat_2b').value) || 0;
+const t = parseFloat(document.getElementById('bat_3b').value) || 0;
+const hr = parseFloat(document.getElementById('bat_hr').value) || 0;
+const ab = parseFloat(document.getElementById('bat_ab').value) || 0;
+const bb = parseFloat(document.getElementById('bat_bb').value) || 0;
+const hbp = parseFloat(document.getElementById('bat_hbp').value) || 0;
+
+if (ab === 0) { alert('타수를 입력하세요'); return; }
+const avg = (hits / ab).toFixed(3);
+const tb = hits - d - t - hr + (d * 2) + (t * 3) + (hr * 4);
+const slg = (tb / ab).toFixed(3);
+const obp = ((hits + bb + hbp) / (ab + bb + hbp)).toFixed(3);
+const ops = (parseFloat(obp) + parseFloat(slg)).toFixed(3);
+document.getElementById('batall_avg').textContent = avg;
+document.getElementById('batall_slg').textContent = slg;
+document.getElementById('batall_obp').textContent = obp;
+document.getElementById('batall_ops').textContent = ops;
+document.getElementById('batallResult').classList.add('show');
+}
+function resetBatAll() {
+document.getElementById('bat_hits').value = 0;
+document.getElementById('bat_2b').value = 0;
+document.getElementById('bat_3b').value = 0;
+document.getElementById('bat_hr').value = 0;
+document.getElementById('bat_ab').value = 0;
+document.getElementById('bat_bb').value = 0;
+document.getElementById('bat_hbp').value = 0;
+document.getElementById('batallResult').classList.remove('show');
+}
+
+function calcEra() {
+const er = parseFloat(document.getElementById('era_er').value) || 0;
+const ip = parseFloat(document.getElementById('era_ip').value) || 0;
+if (ip === 0) { alert('이닝을 입력하세요'); return; }
+const era = ((er * 9) / ip).toFixed(2);
+document.getElementById('eraValue').textContent = era;
+document.getElementById('eraResult').classList.add('show');
+}
+function resetEra() {
+document.getElementById('era_er').value = 0;
+document.getElementById('era_ip').value = 0;
+document.getElementById('eraResult').classList.remove('show');
+}
+
+function calcEraPlus() {
+const era = parseFloat(document.getElementById('eraplus_era').value) || 0;
+const league = parseFloat(document.getElementById('eraplus_league').value) || 4.00;
+if (era === 0 || league === 0) { alert('값을 입력하세요'); return; }
+const eraplus = Math.round((league / era) * 100);
+document.getElementById('eraplusValue').textContent = eraplus;
+document.getElementById('eraplusResult').classList.add('show');
+}
+function resetEraPlus() {
+document.getElementById('eraplus_era').value = 0;
+document.getElementById('eraplus_league').value = 4.00;
+document.getElementById('eraplusResult').classList.remove('show');
+}
+
+function calcWhip() {
+const h = parseFloat(document.getElementById('whip_h').value) || 0;
+const bb = parseFloat(document.getElementById('whip_bb').value) || 0;
+const ip = parseFloat(document.getElementById('whip_ip').value) || 0;
+if (ip === 0) { alert('이닝을 입력하세요'); return; }
+const whip = ((h + bb) / ip).toFixed(3);
+document.getElementById('whipValue').textContent = whip;
+document.getElementById('whipResult').classList.add('show');
+}
+function resetWhip() {
+document.getElementById('whip_h').value = 0;
+document.getElementById('whip_bb').value = 0;
+document.getElementById('whip_ip').value = 0;
+document.getElementById('whipResult').classList.remove('show');
+}
+
+function calcK9() {
+const k = parseFloat(document.getElementById('k9_k').value) || 0;
+const ip = parseFloat(document.getElementById('k9_ip').value) || 0;
+if (ip === 0) { alert('이닝을 입력하세요'); return; }
+const k9 = ((k * 9) / ip).toFixed(2);
+document.getElementById('k9Value').textContent = k9;
+document.getElementById('k9Result').classList.add('show');
+}
+function resetK9() {
+document.getElementById('k9_k').value = 0;
+document.getElementById('k9_ip').value = 0;
+document.getElementById('k9Result').classList.remove('show');
+}
+
+function calcBb9() {
+const bb = parseFloat(document.getElementById('bb9_bb').value) || 0;
+const ip = parseFloat(document.getElementById('bb9_ip').value) || 0;
+if (ip === 0) { alert('이닝을 입력하세요'); return; }
+const bb9 = ((bb * 9) / ip).toFixed(2);
+document.getElementById('bb9Value').textContent = bb9;
+document.getElementById('bb9Result').classList.add('show');
+}
+function resetBb9() {
+document.getElementById('bb9_bb').value = 0;
+document.getElementById('bb9_ip').value = 0;
+document.getElementById('bb9Result').classList.remove('show');
+}
+
+function calcKkbb() {
+const k = parseFloat(document.getElementById('kkbb_k').value) || 0;
+const bb = parseFloat(document.getElementById('kkbb_bb').value) || 0;
+if (bb === 0) { alert('볼넷을 입력하세요'); return; }
+const kkbb = (k / bb).toFixed(3);
+document.getElementById('kkbbValue').textContent = kkbb;
+document.getElementById('kkbbResult').classList.add('show');
+}
+function resetKkbb() {
+document.getElementById('kkbb_k').value = 0;
+document.getElementById('kkbb_bb').value = 0;
+document.getElementById('kkbbResult').classList.remove('show');
+}
+
+function calcPitchAll() {
+const ip = parseFloat(document.getElementById('pitch_ip').value) || 0;
+const er = parseFloat(document.getElementById('pitch_er').value) || 0;
+const h = parseFloat(document.getElementById('pitch_h').value) || 0;
+const bb = parseFloat(document.getElementById('pitch_bb').value) || 0;
+const k = parseFloat(document.getElementById('pitch_k').value) || 0;
+if (ip === 0) { alert('이닝을 입력하세요'); return; }
+const era = ((er * 9) / ip).toFixed(2);
+const whip = ((h + bb) / ip).toFixed(3);
+const k9 = ((k * 9) / ip).toFixed(2);
+const bb9 = ((bb * 9) / ip).toFixed(2);
+const kkbb = bb === 0 ? '무한대' : (k / bb).toFixed(3);
+document.getElementById('pitch_era').textContent = era;
+document.getElementById('pitch_whip').textContent = whip;
+document.getElementById('pitch_k9').textContent = k9;
+document.getElementById('pitch_bb9').textContent = bb9;
+document.getElementById('pitch_kkbb').textContent = kkbb;
+document.getElementById('pitchallResult').classList.add('show');
+}
+function resetPitchAll() {
+document.getElementById('pitch_ip').value = 0;
+document.getElementById('pitch_er').value = 0;
+document.getElementById('pitch_h').value = 0;
+document.getElementById('pitch_bb').value = 0;
+document.getElementById('pitch_k').value = 0;
+document.getElementById('pitchallResult').classList.remove('show');
+}
+</script>
+</body>
+</html>
